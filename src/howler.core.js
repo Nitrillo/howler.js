@@ -633,7 +633,7 @@
 
       // If they selected autoplay, add a play event to the load queue.
       if (self._autoplay) {
-        self._queue.push({
+        self._pushQueue({
           event: 'play',
           action: function() {
             self.play();
@@ -797,7 +797,7 @@
 
         // Add the sound to the queue to be played on load.
         var soundId = sound._id;
-        self._queue.push({
+        self._pushQueue({
           event: 'play',
           action: function() {
             self.play(soundId);
@@ -1011,7 +1011,7 @@
 
       // If the sound hasn't loaded or a play() promise is pending, add it to the load queue to pause when capable.
       if (self._state !== 'loaded' || self._playLock) {
-        self._queue.push({
+        self._pushQueue({
           event: 'pause',
           action: function() {
             self.pause(id);
@@ -1081,7 +1081,7 @@
 
       // If the sound hasn't loaded, add it to the load queue to stop when capable.
       if (self._state !== 'loaded' || self._playLock) {
-        self._queue.push({
+        self._pushQueue({
           event: 'stop',
           action: function() {
             self.stop(id);
@@ -1155,7 +1155,7 @@
 
       // If the sound hasn't loaded, add it to the load queue to mute when capable.
       if (self._state !== 'loaded'|| self._playLock) {
-        self._queue.push({
+        self._pushQueue({
           event: 'mute',
           action: function() {
             self.mute(muted, id);
@@ -1238,7 +1238,7 @@
       if (typeof vol !== 'undefined' && vol >= 0 && vol <= 1) {
         // If the sound hasn't loaded, add it to the load queue to change volume when capable.
         if (self._state !== 'loaded'|| self._playLock) {
-          self._queue.push({
+          self._pushQueue({
             event: 'volume',
             action: function() {
               self.volume.apply(self, args);
@@ -1297,7 +1297,7 @@
 
       // If the sound hasn't loaded, add it to the load queue to fade when capable.
       if (self._state !== 'loaded' || self._playLock) {
-        self._queue.push({
+        self._pushQueue({
           event: 'fade',
           action: function() {
             self.fade(from, to, len, id);
@@ -1522,7 +1522,7 @@
       if (typeof rate === 'number') {
         // If the sound hasn't loaded, add it to the load queue to change playback rate when capable.
         if (self._state !== 'loaded' || self._playLock) {
-          self._queue.push({
+          self._pushQueue({
             event: 'rate',
             action: function() {
               self.rate.apply(self, args);
@@ -1622,7 +1622,7 @@
 
       // If the sound hasn't loaded, add it to the load queue to seek when capable.
       if (typeof seek === 'number' && (self._state !== 'loaded' || self._playLock)) {
-        self._queue.push({
+        self._pushQueue({
           event: 'seek',
           action: function() {
             self.seek.apply(self, args);
@@ -1941,6 +1941,18 @@
       }
 
       return self;
+    },
+
+    _pushQueue: function (task) {
+      var self = this;
+      var event = task.event;
+
+      // New actions will overwrite old ones
+      if (['volume', 'stereo', 'fade', 'rate', 'pos', 'orientation'].indexOf(event) >= 0) {
+        self._queue = self._queue.filter(function (task) { return task.event !== event; } );
+      }
+
+      self._queue.push(task);
     },
 
     /**

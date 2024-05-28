@@ -183,7 +183,7 @@
 
     // If the sound hasn't loaded, add it to the load queue to change stereo pan when capable.
     if (self._state !== 'loaded') {
-      self._queue.push({
+      self._pushQueue({
         event: 'stereo',
         action: function() {
           self.stereo(pan, id);
@@ -268,7 +268,7 @@
 
     // If the sound hasn't loaded, add it to the load queue to change position when capable.
     if (self._state !== 'loaded') {
-      self._queue.push({
+      self._pushQueue({
         event: 'pos',
         action: function() {
           self.pos(x, y, z, id);
@@ -347,7 +347,7 @@
 
     // If the sound hasn't loaded, add it to the load queue to change orientation when capable.
     if (self._state !== 'loaded') {
-      self._queue.push({
+      self._pushQueue({
         event: 'orientation',
         action: function() {
           self.orientation(x, y, z, id);
